@@ -3,6 +3,7 @@ const db = new PrismaClient()
 
 async function seed() {
     const posts = getPosts();
+    const users = getUsers();
     
     await Promise.all(
         posts.map(async post => {
@@ -10,11 +11,27 @@ async function seed() {
             console.log('Created post:', createdPost);
         })
     );
+
+    await Promise.all(
+      users.map(async (user) => {
+        const createdUser = await db.user.create({ data: user }); // Создаем админского пользователя
+        console.log('Created user:', createdUser);
+      })
+    );
     
     console.log('Seeding completed.');
 }
 
 seed()
+
+function getUsers() {
+  return [
+    {
+      username: 'matvei2023',
+      password: 'matveipassword',
+    },
+  ];
+}
 
 function getPosts() {
     return [

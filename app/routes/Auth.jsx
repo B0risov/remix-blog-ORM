@@ -1,4 +1,4 @@
-
+import { Link } from "@remix-run/react";
 
 export default function Auth() {
 
@@ -14,9 +14,9 @@ export default function Auth() {
           <label htmlFor="password">Password:</label>
           <input type="password" name="password" id="password" />
         </div>
-        <button className="btn btn-block" type="submit">
+        <Link to='/admin' className='btn btn-login'>
           Login
-        </button>
+      </Link>
       </form>
     </div>
   );

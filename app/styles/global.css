@@ -108,6 +108,11 @@ p {
   padding: 5px 10px;
 }
 
+.btn-login{
+  display: flex;
+  justify-content: center;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
