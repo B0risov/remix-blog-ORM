@@ -15,14 +15,22 @@ export const loader = async ({params}) => {
 
 export const action = async ({request, params}) => {
   const form = await request.formData()
-  if (form.get('_method') === 'delete') {
+  if (form.get('_method') === 'put') {
     const post = await db.post.findUnique({
       where: { id: params.postId },
     })
   
     if(!post) throw new Error('Post not found')
 
-    await db.post.delete({ where: {id: params.postId}})
+    const updatedPost = {
+      title: form.get('title'),
+      body: form.get('body')
+    }
+
+    await db.post.update({
+      where: { id: params.postId },
+      data: updatedPost
+    })
     return redirect('/posts')
   }
 }
@@ -41,10 +49,18 @@ function Post() {
 
       <div className="page-content">{post.body}</div>
 
-      <div className="page-footer">
+      <div className="page-content">
          <form method='POST'>
-           <input type="hidden" name="_method" value="delete" />
-           <button className='btn btn-delete'>Delete</button>
+           <input type="hidden" name="_method" value="put" />
+           <div className="form-control">
+             <label htmlFor='title'>Correct title</label>
+             <input type="text" name="title" value={post.title} />
+           </div>
+           <div className="form-control">
+             <label htmlFor='body'>Correct body</label>
+             <input type="text" name="body" value={post.body} />
+           </div>
+           <button className="btn btn-block" type="submit">Save</button>
          </form>
       </div>
     </div>

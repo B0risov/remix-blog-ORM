@@ -10,7 +10,6 @@ export const action = async({request}) => {
   const fields = {title, body}
 
   const post = await db.post.create({data: fields})
-
   return redirect(`/posts/${post.id}`)
 }
 
