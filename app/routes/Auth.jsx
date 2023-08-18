@@ -1,54 +1,70 @@
-import React, { useState } from 'react';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import { Link } from '@remix-run/react'
+import { db } from '~/utils/db.server'
+import { redirect } from 'react-router'
+import bcrypt from 'bcrypt'
 
-const Auth = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export const action = async ({request}) => {
+  console.log('hi')
+  const form = await request.formData()
+  const username = form.get('username')
+  const password = form.get('password')
 
-  const handleSubmit = async (e) => {
-    console.log('gooo')
-    e.preventDefault();
+  const user = await db.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
 
-    const client = new PrismaClient();
-
-    const user = await client.user.findOne({
-      where: {
-        username: username,
-      },
-    });
-
-    if (!user) {
-      console.log('Wrong username or password');
-      return;
-    }
-
+  if (!user) {
+    return {
+      status: 401,
+      body: JSON.stringify({
+        error: 'Wrong username or password',
+      }),
+    };
+  } else {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      console.log('Wrong username or password');
-      return;
+      return {
+        status: 401,
+        body: JSON.stringify({
+          error: 'Wrong username or password',
+        }),
+      };
+    } else {
+      return redirect('/admin');
     }
-
-    console.log('Good job');
-  };
-
-  return (
-    <div>
-      <h1>Login</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleSubmit}>Login</button>
-    </div>
-  );
+  }
 };
 
-export default Auth;
+function Auth() {
+  return (
+    <>
+    <div className="page-header">
+      <h1>Login</h1>
+      <Link to='/' className='btn btn-reverse'>
+        Back
+      </Link>
+    </div>
+
+    <div className="page-content">
+      <form method='POST'>
+        <div className="form-control">
+          <label htmlFor='username'>Username</label>
+          <input type='text' name='username' id='username' />
+        </div>
+        <div className="form-control">
+          <label htmlFor='password'>Password</label>
+          <input type='password' name='password' id='password' />
+        </div>
+        <button type='submit' className="btn btn-block">
+          Login
+        </button>
+      </form>
+    </div>
+    </>
+  )
+}
+
+export default Auth
