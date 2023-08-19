@@ -1,7 +1,21 @@
 import { Outlet, LiveReload, Link, Links, Meta } from "@remix-run/react";
 import globalStylesUrl from '~/styles/global.css';
+import auth from './styles/auth'
+import btn from './styles/btn'
+import form from './styles/form'
+import navbar from './styles/navbar'
+import page from './styles/page'
+import posts from './styles/posts'
 
-export const links = () => [{rel: 'stylesheet', href: globalStylesUrl}];
+export const links = () => [
+  {rel: 'stylesheet', href: globalStylesUrl},
+  {rel: 'stylesheet', href: auth},
+  {rel: 'stylesheet', href: btn},
+  {rel: 'stylesheet', href: form},
+  {rel: 'stylesheet', href: navbar},
+  {rel: 'stylesheet', href: page},
+  {rel: 'stylesheet', href: posts}
+];
 
 export const meta = () => {
 
@@ -57,7 +71,7 @@ function Layout({children}) {
      <div className="container">
        {children}
      </div>
-    </>
+    </> 
   )
 }
 
@@ -66,8 +80,8 @@ export function ErrorBoundary({error}) {
   return(
     <Documnet>
       <Layout>
-      <h1>Error</h1>
-      <p>{error.message}</p>
+        <h1>Error</h1>
+        <p>{error.message}</p>
       </Layout>
     </Documnet>
   )

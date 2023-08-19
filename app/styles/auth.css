@@ -1,0 +1,21 @@
+.auth-container {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .auth-container h1 {
+    text-align: center;
+  }
+  
+  .auth-container .pageHeader {
+    display: block;
+  }
+  
+  .auth-container fieldset {
+    padding: 15px;
+    border-radius: 5px;
+  }
+  
+  .auth-container fieldset label {
+    margin-right: 10px;
+  }

@@ -1,6 +1,7 @@
 import { useLoaderData, Link } from '@remix-run/react'
 import { redirect } from 'react-router'
 import { db } from '~/utils/db.server'
+import isAuthenticated from '../auth'
 
 export const loader = async ({ params }) => {
   const post = await db.post.findUnique({
@@ -57,7 +58,7 @@ function Post() {
       <div className="page-content">{post.body}</div>
 
       <div className="page-content">
-        <form method='POST'>
+      {isAuthenticated && <form method='POST'>
           <input type="hidden" name="_method" value="put" />
           <div className="form-control">
             <label htmlFor='title'>Correct title</label>
@@ -68,11 +69,13 @@ function Post() {
             <input type="text" name="body" value={post.body} />
           </div>
           <button className="btn btn-block" type="submit">Save</button>
-        </form>
+        </form>}
+        <div className="page-footer">
         <form method='POST'>
           <input type="hidden" name="_method" value="delete" />
           <button className="btn btn-delete" type="submit">Delete</button>
         </form>
+        </div>
       </div>
     </div>
   )
