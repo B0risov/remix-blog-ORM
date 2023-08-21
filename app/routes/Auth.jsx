@@ -1,48 +1,21 @@
-import { Link } from '@remix-run/react'
-import { db } from '~/utils/db.server'
-import { redirect } from 'react-router'
-import bcrypt from 'bcrypt'
+import { Link } from '@remix-run/react';
+import { authenticateUser } from '~/utils/authUtils';
+import { createErrorResponse, createSuccessResponse } from '~/utils/responseUtils';
 
 let isAuthenticated = false;
 
-export const action = async ({request}) => {
-  const form = await request.formData()
-  const username = form.get('username')
-  const password = form.get('password')
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const username = form.get('username');
+  const password = form.get('password');
 
-  const user = await db.user.findUnique({
-    where: {
-      username: username,
-    },
-  });
+  const isValidPassword = await authenticateUser(username, password);
 
-  if (!user) {
-    return {
-      status: 401,
-      body: JSON.stringify({
-        error: 'Wrong username or password',
-      }),
-    };
+  if (!isValidPassword) {
+    return createErrorResponse(401, 'Wrong username or password');
   } else {
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
-      return {
-        status: 401,
-        body: JSON.stringify({
-          error: 'Wrong username or password',
-        }),
-      };
-    } else {
-      isAuthenticated = true;
-      return {
-        status: 200,
-        body: JSON.stringify({
-          success: true,
-          isAuthenticated: true,
-        }),
-      };
-    }
+    isAuthenticated = true;
+    return createSuccessResponse(200);
   }
 };
 

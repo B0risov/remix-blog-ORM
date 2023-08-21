@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
+import { PrismaClient } from '@prisma/client';
+import { authenticateUser } from '~/utils/authUtils';
+import { createErrorResponse, createSuccessResponse } from '~/utils/responseUtils';
 
 const client = new PrismaClient();
 
@@ -9,46 +10,16 @@ export async function handleAuthAction(request) {
     const username = form.get('username');
     const password = form.get('password');
 
-    const user = await client.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    const isValidPassword = await authenticateUser(username, password);
 
-    if (!user) {
-      return {
-        status: 401,
-        body: JSON.stringify({
-          error: 'Wrong username or password',
-        }),
-      };
+    if (!isValidPassword) {
+      return createErrorResponse(401, 'Wrong username or password');
     } else {
-      const isValidPassword = await bcrypt.compare(password, user.password);
-
-      if (!isValidPassword) {
-        return {
-          status: 401,
-          body: JSON.stringify({
-            error: 'Wrong username or password',
-          }),
-        };
-      } else {
-        return {
-          status: 200,
-          body: JSON.stringify({
-            success: true,
-          }),
-        };
-      }
+      return createSuccessResponse(200);
     }
   } else {
-    return {
-      status: 405,
-      body: JSON.stringify({
-        error: 'Invalid request method',
-      }),
-    };
+    return createErrorResponse(405, 'Invalid request method');
   }
 }
 
-export default handleAuthAction
+export default handleAuthAction;
