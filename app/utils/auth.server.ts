@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { authenticateUser } from '~/utils/authUtils';
 import { createErrorResponse, createSuccessResponse } from '~/utils/responseUtils';
+import { authenticateAndSetSession } from '~/utils/sessionUtils'; // Импортируйте новую утилиту для сессий
 
 const client = new PrismaClient();
 
@@ -10,9 +10,9 @@ export async function handleAuthAction(request) {
     const username = form.get('username');
     const password = form.get('password');
 
-    const isValidPassword = await authenticateUser(username, password);
+    const isAuthenticated = await authenticateAndSetSession(username, password);
 
-    if (!isValidPassword) {
+    if (!isAuthenticated) {
       return createErrorResponse(401, 'Wrong username or password');
     } else {
       return createSuccessResponse(200);
